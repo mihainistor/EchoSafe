@@ -1,7 +1,7 @@
 {
   "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" },
     { "source": "/favicon.png", "destination": "/favicon.svg" },
-    { "source": "/favicon.ico", "destination": "/favicon.svg" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/favicon.ico", "destination": "/favicon.svg" }
   ]
 }
