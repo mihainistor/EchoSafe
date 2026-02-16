@@ -1,0 +1,213 @@
+.header {
+  background: #000;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.logo:hover {
+  color: var(--color-primary);
+}
+
+.logoIcon {
+  font-size: 1.5rem;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.navLink,
+.navLinkActive {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navLink {
+  color: var(--color-text);
+}
+
+.navLink:hover {
+  color: var(--color-text);
+  background: var(--color-bg-hover);
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+@media (max-width: 640px) {
+  .nav {
+    gap: 0;
+  }
+
+  .navLink,
+  .navLinkActive {
+    padding: var(--space-2);
+    font-size: 0.875rem;
+  }
+}
+
+.desktopOnly { display: flex; align-items: center; gap: var(--space-1); }
+@media (max-width: 640px) { .desktopOnly { display: none; } }
+
+.burger {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .burger { display: inline-flex; }
+}
+
+.mobileMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: var(--space-4);
+  right: var(--space-4);
+  background: #000;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  display: grid;
+  gap: 6px;
+  z-index: 1500;
+}
+
+.mobileLink {
+  display: block;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+  background: transparent;
+}
+.mobileLinkActive { color: var(--color-primary); background: var(--color-primary-subtle); }
+.mobileLink:hover { background: var(--color-bg-hover); }
+
+.profileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 200px;
+  background: #000;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  z-index: 200;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.menuItem:hover {
+  background: var(--color-bg-hover);
+}
+
+.demoBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b21a8;
+  background: rgba(147, 51, 234, 0.12);
+  border: 1px solid rgba(147, 51, 234, 0.6);
+  border-radius: var(--radius-md);
+}
+
+.demoToggle {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(147, 51, 234, 0.6);
+  color: #6b21a8;
+  background: rgba(147, 51, 234, 0.12);
+  cursor: pointer;
+}
+
+.demoToggleInactive {
+  border-color: #9ca3af;
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.12);
+}
+
+.liveBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: var(--radius-md);
+}

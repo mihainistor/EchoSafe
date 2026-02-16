@@ -1,0 +1,166 @@
+/* EchoSafe – Design system & global styles */
+
+:root {
+  /* Brand accents inspired by Orange */
+  --color-primary: #ff7900;
+  --color-primary-hover: #e56700;
+  --color-primary-subtle: rgba(255, 121, 0, 0.16);
+
+  /* Dark theme */
+  --color-bg: #0b0b0f;
+  --color-bg-hover: #15161b;
+  --color-surface: #0a0a0a;
+  --color-border: #262b33;
+
+  --color-text: #f5f7fa;
+  --color-text-muted: #a3aab4;
+
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+
+  /* Typography per Orange DS (web): system sans with Arial priority */
+  --font-heading: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --font-body: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+
+  /* Controls */
+  --control-height: 40px;
+  --control-radius: 4px;
+  --focus-ring: 0 0 0 3px rgba(255, 121, 0, 0.35);
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  /* Radii */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Evită scroll multiplu: permit o singură arie de scroll (documentul) */
+html, body {
+  overflow-x: hidden;
+}
+#root {
+  overflow: visible;
+}
+
+/* Focus styles (WCAG) */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Links */
+a {
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-primary);
+}
+
+/* Buttons (Orange DS-like) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-height);
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--control-radius);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: var(--color-text);
+}
+.btn:hover { background: #222; }
+.btn:active { background: #1f1f1f; }
+.btn--primary {
+  background: var(--color-primary);
+  color: #000;
+  border-color: var(--color-primary);
+}
+.btn--primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+.btn--ghost {
+  background: transparent;
+  border-color: var(--color-border);
+}
+.btn--danger {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #000;
+}
+.btn--sm { height: 32px; padding: 0 12px; font-size: 0.875rem; }
+.btn--lg { height: 48px; padding: 0 20px; font-size: 1rem; }
+
+/* Forms */
+input, textarea, select {
+  background: #0f0f12;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--control-radius);
+  height: var(--control-height);
+  padding: 8px 12px;
+}
+textarea { min-height: calc(var(--control-height) * 2); }
+input::placeholder, textarea::placeholder { color: var(--color-text-muted); }
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  border-color: var(--color-primary);
+}
+
+/* Grid utilities */
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+.grid { display: grid; gap: 16px; }
+@media (min-width: 768px) { .grid.cols-2 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}

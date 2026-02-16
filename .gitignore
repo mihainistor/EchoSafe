@@ -1,0 +1,24 @@
+# Node modules and build artefacts
+**/node_modules/
+**/dist/
+**/build/
+.next/
+.vite/
+coverage/
+playwright-report/
+
+# Environment files (do not commit secrets)
+.env
+.env.*
+frontend/.env.local
+backend/.env.local
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+**/*.log
+logs/

@@ -1,0 +1,245 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Acasă" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: EchoSafe
+      - generic [ref=e8]:
+        - button "DEMO" [ref=e10] [cursor=pointer]
+        - link "Panou de control" [ref=e11] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Familie" [ref=e12] [cursor=pointer]:
+          - /url: /dashboard/member
+        - link "Istoric Locatie" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard/time-machine
+        - link "Alerte" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard/alerts
+        - button "U" [ref=e16] [cursor=pointer]
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - navigation [ref=e19]:
+        - link "Panou" [ref=e20] [cursor=pointer]:
+          - /url: /dashboard
+        - text: /
+        - link "Familie" [ref=e21] [cursor=pointer]:
+          - /url: /dashboard/member
+        - text: /Andrei
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - heading "Andrei" [level=1] [ref=e24]
+          - paragraph [ref=e25]: "0722123450"
+          - paragraph [ref=e26]: Pe traseu (interogare la 10 min)
+        - button "Live" [ref=e28] [cursor=pointer]
+      - generic [ref=e29]:
+        - heading "Locație curentă" [level=2] [ref=e30]
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - generic [ref=e33]: "Conectivitate:"
+            - generic "CONNECTED_DATA" [ref=e34]: Date
+            - generic "Date demo" [ref=e35]: demo
+          - button "Actualizează locația" [ref=e37] [cursor=pointer]
+        - generic [ref=e39]:
+          - generic:
+            - generic:
+              - img
+            - button "Marker" [ref=e41] [cursor=pointer]
+          - generic:
+            - generic [ref=e42]:
+              - button "Zoom in" [ref=e43] [cursor=pointer]: +
+              - button "Zoom out" [ref=e44] [cursor=pointer]: −
+            - link "Leaflet" [ref=e46] [cursor=pointer]:
+              - /url: https://leafletjs.com
+              - img [ref=e47]
+              - text: Leaflet
+        - paragraph [ref=e51]: "Actualizat: 16.02.2026, 11:12:15"
+        - button "Check-in demo" [ref=e53] [cursor=pointer]
+        - generic [ref=e54]:
+          - generic [ref=e55]: Date
+          - generic [ref=e57]: SMS
+          - generic [ref=e59]: Necunoscut
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - heading "Destinații" [level=2] [ref=e63]
+          - button "+ Adaugă" [ref=e64] [cursor=pointer]
+        - paragraph [ref=e65]: "La intrarea membrului într-o destinație primești notificare: „Andrei a ajuns la [Nume]”. Pot fi folosite și ca Safe Zones (fără alertă staționare)."
+        - table [ref=e67]:
+          - rowgroup [ref=e68]:
+            - row "# Nume Adresă Rază (m) Coordonate Acțiuni" [ref=e69]:
+              - columnheader "#" [ref=e70]
+              - columnheader "Nume" [ref=e71]
+              - columnheader "Adresă" [ref=e72]
+              - columnheader "Rază (m)" [ref=e73]
+              - columnheader "Coordonate" [ref=e74]
+              - columnheader "Acțiuni" [ref=e75]
+          - rowgroup [ref=e76]:
+            - row "1 Acasă — 100 44.4246, 26.0984 Vezi pe hartă Editare Ștergere" [ref=e77]:
+              - cell "1" [ref=e78]
+              - cell "Acasă" [ref=e79]
+              - cell "—" [ref=e80]:
+                - generic "—" [ref=e81]
+              - cell "100" [ref=e82]
+              - cell "44.4246, 26.0984" [ref=e83]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e84]:
+                - generic [ref=e85]:
+                  - button "Vezi pe hartă" [ref=e86] [cursor=pointer]
+                  - button "Editare" [ref=e87] [cursor=pointer]
+                  - button "Ștergere" [ref=e88] [cursor=pointer]
+            - row "2 Școală — 150 44.4297, 26.1083 Vezi pe hartă Editare Ștergere" [ref=e89]:
+              - cell "2" [ref=e90]
+              - cell "Școală" [ref=e91]
+              - cell "—" [ref=e92]:
+                - generic "—" [ref=e93]
+              - cell "150" [ref=e94]
+              - cell "44.4297, 26.1083" [ref=e95]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e96]:
+                - generic [ref=e97]:
+                  - button "Vezi pe hartă" [ref=e98] [cursor=pointer]
+                  - button "Editare" [ref=e99] [cursor=pointer]
+                  - button "Ștergere" [ref=e100] [cursor=pointer]
+            - row "3 Antrenament — 100 44.4267, 26.1027 Vezi pe hartă Editare Ștergere" [ref=e101]:
+              - cell "3" [ref=e102]
+              - cell "Antrenament" [ref=e103]
+              - cell "—" [ref=e104]:
+                - generic "—" [ref=e105]
+              - cell "100" [ref=e106]
+              - cell "44.4267, 26.1027" [ref=e107]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e108]:
+                - generic [ref=e109]:
+                  - button "Vezi pe hartă" [ref=e110] [cursor=pointer]
+                  - button "Editare" [ref=e111] [cursor=pointer]
+                  - button "Ștergere" [ref=e112] [cursor=pointer]
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - heading "Zone No-Go" [level=2] [ref=e115]
+          - button "+ Adaugă" [ref=e116] [cursor=pointer]
+        - paragraph [ref=e117]: "Definirea de zone interzise ajută la siguranță: vei primi alertă dacă membrul intră în aceste zone."
+        - table [ref=e119]:
+          - rowgroup [ref=e120]:
+            - row "# Nume Adresă Rază (m) Coordonate Tip Program Acțiuni" [ref=e121]:
+              - columnheader "#" [ref=e122]
+              - columnheader "Nume" [ref=e123]
+              - columnheader "Adresă" [ref=e124]
+              - columnheader "Rază (m)" [ref=e125]
+              - columnheader "Coordonate" [ref=e126]
+              - columnheader "Tip" [ref=e127]
+              - columnheader "Program" [ref=e128]
+              - columnheader "Acțiuni" [ref=e129]
+          - rowgroup [ref=e130]:
+            - row "1 No-Go 1 — 150 44.4378, 26.1020 permanent — Vezi pe hartă Editare Ștergere" [ref=e131]:
+              - cell "1" [ref=e132]
+              - cell "No-Go 1" [ref=e133]
+              - cell "—" [ref=e134]:
+                - generic "—" [ref=e135]
+              - cell "150" [ref=e136]
+              - cell "44.4378, 26.1020" [ref=e137]
+              - cell "permanent" [ref=e138]
+              - cell "—" [ref=e139]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e140]:
+                - generic [ref=e141]:
+                  - button "Vezi pe hartă" [ref=e142] [cursor=pointer]
+                  - button "Editare" [ref=e143] [cursor=pointer]
+                  - button "Ștergere" [ref=e144] [cursor=pointer]
+            - row "2 No-Go 2 — 175 44.4292, 26.1130 scheduled 12:00–18:00 Vezi pe hartă Editare Ștergere" [ref=e145]:
+              - cell "2" [ref=e146]
+              - cell "No-Go 2" [ref=e147]
+              - cell "—" [ref=e148]:
+                - generic "—" [ref=e149]
+              - cell "175" [ref=e150]
+              - cell "44.4292, 26.1130" [ref=e151]
+              - cell "scheduled" [ref=e152]
+              - cell "12:00–18:00" [ref=e153]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e154]:
+                - generic [ref=e155]:
+                  - button "Vezi pe hartă" [ref=e156] [cursor=pointer]
+                  - button "Editare" [ref=e157] [cursor=pointer]
+                  - button "Ștergere" [ref=e158] [cursor=pointer]
+            - row "3 No-Go 3 — 200 44.4185, 26.1082 permanent — Vezi pe hartă Editare Ștergere" [ref=e159]:
+              - cell "3" [ref=e160]
+              - cell "No-Go 3" [ref=e161]
+              - cell "—" [ref=e162]:
+                - generic "—" [ref=e163]
+              - cell "200" [ref=e164]
+              - cell "44.4185, 26.1082" [ref=e165]
+              - cell "permanent" [ref=e166]
+              - cell "—" [ref=e167]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e168]:
+                - generic [ref=e169]:
+                  - button "Vezi pe hartă" [ref=e170] [cursor=pointer]
+                  - button "Editare" [ref=e171] [cursor=pointer]
+                  - button "Ștergere" [ref=e172] [cursor=pointer]
+            - row "4 No-Go 4 — 225 44.4189, 26.0975 scheduled 12:00–18:00 Vezi pe hartă Editare Ștergere" [ref=e173]:
+              - cell "4" [ref=e174]
+              - cell "No-Go 4" [ref=e175]
+              - cell "—" [ref=e176]:
+                - generic "—" [ref=e177]
+              - cell "225" [ref=e178]
+              - cell "44.4189, 26.0975" [ref=e179]
+              - cell "scheduled" [ref=e180]
+              - cell "12:00–18:00" [ref=e181]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e182]:
+                - generic [ref=e183]:
+                  - button "Vezi pe hartă" [ref=e184] [cursor=pointer]
+                  - button "Editare" [ref=e185] [cursor=pointer]
+                  - button "Ștergere" [ref=e186] [cursor=pointer]
+            - row "5 No-Go 5 — 250 44.4290, 26.0937 permanent — Vezi pe hartă Editare Ștergere" [ref=e187]:
+              - cell "5" [ref=e188]
+              - cell "No-Go 5" [ref=e189]
+              - cell "—" [ref=e190]:
+                - generic "—" [ref=e191]
+              - cell "250" [ref=e192]
+              - cell "44.4290, 26.0937" [ref=e193]
+              - cell "permanent" [ref=e194]
+              - cell "—" [ref=e195]
+              - cell "Vezi pe hartă Editare Ștergere" [ref=e196]:
+                - generic [ref=e197]:
+                  - button "Vezi pe hartă" [ref=e198] [cursor=pointer]
+                  - button "Editare" [ref=e199] [cursor=pointer]
+                  - button "Ștergere" [ref=e200] [cursor=pointer]
+      - generic [ref=e201]:
+        - generic [ref=e202]:
+          - heading "Trasee" [level=2] [ref=e203]
+          - button "+ Adaugă" [ref=e204] [cursor=pointer]
+        - paragraph [ref=e205]: Definirea unor trasee preferate ajută la monitorizare eficientă. La părăsirea traseului vei primi alertă.
+        - list [ref=e206]:
+          - listitem [ref=e207]:
+            - strong [ref=e208]: Acasă → Școală
+            - generic [ref=e209]: "— Lun, Mar, Mie, Joi, Vin · Pieton · Alocat: Andrei"
+            - button "Șterge" [ref=e211] [cursor=pointer]
+          - listitem [ref=e212]:
+            - strong [ref=e213]: Școală → Antrenament
+            - generic [ref=e214]: "— Lun, Mar, Mie, Joi, Vin · Bicicletă · Alocat: Andrei"
+            - button "Șterge" [ref=e216] [cursor=pointer]
+          - listitem [ref=e217]:
+            - strong [ref=e218]: Acasă → Centru
+            - generic [ref=e219]: "— Lun, Mar, Mie, Joi, Vin · Transport în comun · Alocat: Andrei"
+            - button "Șterge" [ref=e221] [cursor=pointer]
+      - generic [ref=e222]:
+        - heading "Configurare alerte" [level=2] [ref=e224]
+        - paragraph [ref=e225]: Activează tipurile de alerte dorite. Pentru staționare prelungită poți seta durata și zonele sigure.
+        - generic [ref=e226]:
+          - generic [ref=e227] [cursor=pointer]:
+            - checkbox "Intrare în zonă No-Go" [checked] [ref=e228]
+            - text: Intrare în zonă No-Go
+          - generic [ref=e229] [cursor=pointer]:
+            - checkbox "Abatere de la traseu" [checked] [ref=e230]
+            - text: Abatere de la traseu
+        - generic [ref=e232] [cursor=pointer]:
+          - checkbox "Staționare prelungită" [active] [ref=e233]
+          - text: Staționare prelungită
+      - button "Șterge membru" [ref=e236] [cursor=pointer]
+  - contentinfo [ref=e237]:
+    - generic [ref=e238]:
+      - strong [ref=e240]: EchoSafe
+      - navigation [ref=e241]:
+        - link "Termeni și condiții" [ref=e242] [cursor=pointer]:
+          - /url: "#"
+          - text: Termeni
+        - link "Politica de confidențialitate" [ref=e243] [cursor=pointer]:
+          - /url: "#"
+          - text: Confidențialitate
+        - link "Contact" [ref=e244] [cursor=pointer]:
+          - /url: "#"
+```

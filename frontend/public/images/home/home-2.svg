@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 540" role="img" aria-label="Trasee Smart &amp; Free-hand">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b0f"/>
+      <stop offset="1" stop-color="#101218"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="540" fill="url(#bg2)"/>
+  <rect x="140" y="90" width="520" height="340" rx="24" fill="#0f1115" stroke="#1f2937"/>
+  <!-- map grid -->
+  <g stroke="#111827" opacity="0.45">
+    <path d="M160 140h480M160 180h480M160 220h480M160 260h480M160 300h480M160 340h480" />
+    <path d="M200 120v320M260 120v320M320 120v320M380 120v320M440 120v320M500 120v320M560 120v320M620 120v320" />
+  </g>
+  <!-- smart route (dashed proposal) -->
+  <polyline points="190,360 260,320 320,290 380,240 460,210 560,200"
+            fill="none" stroke="#93c5fd" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round"/>
+  <!-- finalized route -->
+  <polyline points="190,360 250,330 310,300 370,260 440,220 520,205 560,200"
+            fill="none" stroke="#ff7900" stroke-width="4" stroke-linecap="round"/>
+  <!-- markers -->
+  <circle cx="190" cy="360" r="8" fill="#10b981"/>
+  <circle cx="560" cy="200" r="9" fill="#ff7900"/>
+  <!-- simple ETA pill (no text for compatibility) -->
+  <rect x="520" y="168" width="120" height="28" rx="14" fill="#111827" stroke="#1f2937"/>
+  <!-- simple toolbar blocks -->
+  <rect x="160" y="110" width="120" height="28" rx="6" fill="#111827" stroke="#1f2937"/>
+  <rect x="300" y="110" width="120" height="28" rx="6" fill="#111827" stroke="#1f2937"/>
+</svg>
