@@ -7,6 +7,8 @@
  */
 
 import { orangeReachabilityConfig } from '../config/orange.js'
+import { orangeErrorCounter, orangeDuration } from '../metrics.js'
+import { logInfo, logError } from '../utils/logger.js'
 import { randomUUID } from 'crypto'
 
 const {
@@ -49,11 +51,21 @@ export async function retrieveDeviceReachability(msisdn, options = {}) {
   const body = { device: { phoneNumber } }
   const correlator = options.xCorrelator || randomUUID()
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: getHeaders(correlator),
-    body: JSON.stringify(body),
-  })
+  const start = process.hrtime.bigint()
+  const ac = new AbortController()
+  const to = setTimeout(() => ac.abort(), Number(process.env.ORANGE_TIMEOUT_MS || 10000))
+  let res
+  try {
+    try { logInfo({ msg: 'orange_reachability_request', correlator, phoneNumber }) } catch (e) { void e }
+    res = await fetch(url, {
+      method: 'POST',
+      headers: getHeaders(correlator),
+      body: JSON.stringify(body),
+      signal: ac.signal,
+    })
+  } finally {
+    clearTimeout(to)
+  }
 
   const text = await res.text()
   if (!res.ok) {
@@ -65,6 +77,10 @@ export async function retrieveDeviceReachability(msisdn, options = {}) {
     } catch {
       if (text) errMessage += ` — ${text.slice(0, 200)}`
     }
+    try { logError({ msg: 'orange_reachability_error', correlator, status: res.status, body: text.slice(0, 200) }) } catch (e) { void e }
+    orangeErrorCounter.inc({ api: 'reachability', code: String(res.status) })
+    const sec = Number(process.hrtime.bigint() - start) / 1e9
+    orangeDuration.observe({ api: 'reachability', status: String(res.status) }, sec)
     throw new Error(errMessage)
   }
 
@@ -73,10 +89,14 @@ export async function retrieveDeviceReachability(msisdn, options = {}) {
     throw new Error('Orange Reachability API: răspuns fără reachabilityStatus')
   }
 
-  return {
+  const result = {
     reachabilityStatus: data.reachabilityStatus,
     ...(data.lastStatusTime != null && { lastStatusTime: data.lastStatusTime }),
   }
+  const sec = Number(process.hrtime.bigint() - start) / 1e9
+  orangeDuration.observe({ api: 'reachability', status: '200' }, sec)
+  try { logInfo({ msg: 'orange_reachability_ok', correlator, status: 200 }) } catch (e) { void e }
+  return result
 }
 
 export { orangeReachabilityConfig }

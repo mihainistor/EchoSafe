@@ -1,24 +1,17 @@
-# Node modules and build artefacts
-**/node_modules/
-**/dist/
-**/build/
-.next/
-.vite/
-coverage/
-playwright-report/
-
-# Environment files (do not commit secrets)
+node_modules/
+dist/
+.DS_Store
+*.log
 .env
-.env.*
-frontend/.env.local
-backend/.env.local
-
-# IDE / OS files
+*.local
+coverage/
+frontend/node_modules/
+frontend/dist/
+backend/node_modules/
+backend/dist/
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
-
-# Logs
-**/*.log
-logs/
+.turbo/
+.cache/
+**/.DS_Store
+**/Thumbs.db

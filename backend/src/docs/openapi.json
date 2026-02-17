@@ -1,0 +1,290 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "EchoSafe API", "version": "0.1.0" },
+  "servers": [{ "url": "http://localhost:4000" }],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "retry_after_sec": { "type": "integer" },
+          "attempts_left": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health status",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "service": { "type": "string" },
+                    "mode": { "type": "string", "enum": ["db", "memory"] },
+                    "db": { "type": "string", "enum": ["ok", "init", "down", "none"] },
+                    "uptime_sec": { "type": "integer" },
+                    "build": {
+                      "type": "object",
+                      "properties": {
+                        "version": { "type": "string" },
+                        "commit": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ready": {
+      "get": {
+        "summary": "Readiness (DB ping when configured)",
+        "responses": {
+          "200": { "description": "Ready" },
+          "503": { "description": "Not ready" }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Înregistrează un utilizator",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "msisdn_admin": { "type": "string" }
+                },
+                "required": ["email", "password", "msisdn_admin"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Bad Request (invalid_email, invalid_password, invalid_msisdn)" },
+          "409": { "description": "Conflict" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Autentificare cu parolă",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Bad Request (invalid_email)" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/auth/otp/request": {
+      "post": {
+        "summary": "Solicită OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "properties": { "email": { "type": "string", "format": "email" } }, "required": ["email"] }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK (resend_after_sec; debug_code în DEBUG_EMAIL)" },
+          "400": { "description": "Bad Request (invalid_email)" },
+          "429": { "description": "Rate limited" }
+        }
+      }
+    },
+    "/api/auth/otp/resend": {
+      "post": {
+        "summary": "Retrimite OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "properties": { "email": { "type": "string", "format": "email" } }, "required": ["email"] }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK (resend_after_sec; debug_code în DEBUG_EMAIL)" },
+          "400": { "description": "Bad Request (invalid_email, no_active_otp)" },
+          "429": { "description": "Too soon" }
+        }
+      }
+    },
+    "/api/auth/otp/verify": {
+      "post": {
+        "summary": "Verifică OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "code": { "type": "string" }
+                },
+                "required": ["email", "code"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Invalid/Expired (invalid_email, invalid_code_format)" },
+          "401": { "description": "Invalid code" }
+        }
+      }
+    }
+    ,
+    "/api/devices": {
+      "get": {
+        "summary": "Lista dispozitivelor pentru admin-ul autentificat",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "minimum": 0 } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Missing admin id" } },
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Creează dispozitiv în PENDING și trimite OTP (SMS sau demo)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "msisdn_target": { "type": "string" },
+                  "label": { "type": "string" }
+                },
+                "required": ["msisdn_target", "label"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Bad Request (invalid_msisdn, invalid_label)" }
+        },
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/devices/{id}": {
+      "get": {
+        "summary": "Detalii dispozitiv",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } },
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Actualizare atribute dispozitiv",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Bad Request (invalid_label, invalid_threshold)" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not found" }
+        },
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Revocă dispozitiv",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } },
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/devices/{id}/validate-otp": {
+      "post": {
+        "summary": "Validează OTP pentru activare",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "otp": { "type": "string" } }, "required": ["otp"] } } }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Invalid (invalid_code_format)" },
+          "403": { "description": "Forbidden" }
+        },
+        "security": [{ "BearerAuth": [] }]
+      }
+    }
+    ,
+    "/api/users/me": {
+      "get": {
+        "summary": "Returnează profilul utilizatorului curent",
+        "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } },
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Actualizează email, msisdn_admin și preferințe notificări",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "msisdn_admin": { "type": "string" },
+                  "notification_pref": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Bad Request (invalid_email, invalid_msisdn)" },
+          "404": { "description": "Not found" }
+        },
+        "security": [{ "BearerAuth": [] }]
+      }
+    }
+  }
+}

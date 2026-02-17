@@ -15,3 +15,11 @@ export function verifyPassword(password, stored) {
   if (a.length !== b.length) return false
   return timingSafeEqual(a, b)
 }
+
+export function hashOtp(code) {
+  return hashPassword(String(code))
+}
+
+export function verifyOtp(code, stored) {
+  return verifyPassword(String(code), stored)
+}

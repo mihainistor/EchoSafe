@@ -47,7 +47,7 @@ export async function sendOtpSms(msisdn, otp) {
     try {
       const json = JSON.parse(txt)
       if (json.message) msg = json.message
-    } catch {}
+    } catch (e) { void e }
     throw new Error(msg)
   }
   return { ok: true }

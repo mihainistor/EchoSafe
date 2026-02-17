@@ -7,6 +7,8 @@
  */
 
 import { orangeLocationConfig } from '../config/orange.js'
+import { orangeErrorCounter, orangeDuration } from '../metrics.js'
+import { logInfo, logError } from '../utils/logger.js'
 import { randomUUID } from 'crypto'
 
 const {
@@ -56,11 +58,21 @@ export async function retrieveDeviceLocation(msisdn, options = {}) {
   }
 
   const correlator = options.xCorrelator || randomUUID()
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: getHeaders(correlator),
-    body: JSON.stringify(body),
-  })
+  const start = process.hrtime.bigint()
+  const ac = new AbortController()
+  const to = setTimeout(() => ac.abort(), Number(process.env.ORANGE_TIMEOUT_MS || 10000))
+  let res
+  try {
+    try { logInfo({ msg: 'orange_location_request', correlator, phoneNumber }) } catch (e) { void e }
+    res = await fetch(url, {
+      method: 'POST',
+      headers: getHeaders(correlator),
+      body: JSON.stringify(body),
+      signal: ac.signal,
+    })
+  } finally {
+    clearTimeout(to)
+  }
 
   const text = await res.text()
   if (!res.ok) {
@@ -72,6 +84,10 @@ export async function retrieveDeviceLocation(msisdn, options = {}) {
     } catch {
       if (text) errMessage += ` — ${text.slice(0, 200)}`
     }
+    try { logError({ msg: 'orange_location_error', correlator, status: res.status, body: text.slice(0, 200) }) } catch (e) { void e }
+    orangeErrorCounter.inc({ api: 'location', code: String(res.status) })
+    const sec = Number(process.hrtime.bigint() - start) / 1e9
+    orangeDuration.observe({ api: 'location', status: String(res.status) }, sec)
     throw new Error(errMessage)
   }
 
@@ -85,25 +101,35 @@ export async function retrieveDeviceLocation(msisdn, options = {}) {
   if (area.areaType === 'CIRCLE' && area.center) {
     const { latitude, longitude } = area.center
     const radius = area.radius
-    return {
+    const result = {
       lat: Number(latitude),
       lng: Number(longitude),
       ...(radius != null && { accuracy: Number(radius) }),
       lastLocationTime,
       area,
     }
+    const sec = Number(process.hrtime.bigint() - start) / 1e9
+    orangeDuration.observe({ api: 'location', status: '200' }, sec)
+    try { logInfo({ msg: 'orange_location_ok', correlator, status: 200 }) } catch (e) { void e }
+    return result
   }
 
   if (area.areaType === 'POLYGON' && Array.isArray(area.boundary) && area.boundary.length > 0) {
     const first = area.boundary[0]
-    return {
+    const result = {
       lat: Number(first.latitude),
       lng: Number(first.longitude),
       lastLocationTime,
       area,
     }
+    const sec = Number(process.hrtime.bigint() - start) / 1e9
+    orangeDuration.observe({ api: 'location', status: '200' }, sec)
+    try { logInfo({ msg: 'orange_location_ok', correlator, status: 200 }) } catch (e) { void e }
+    return result
   }
 
+  const sec = Number(process.hrtime.bigint() - start) / 1e9
+  orangeDuration.observe({ api: 'location', status: '200' }, sec)
   throw new Error('Orange Location API: area necunoscut sau invalid')
 }
 

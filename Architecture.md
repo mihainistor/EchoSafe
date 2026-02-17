@@ -19,11 +19,11 @@ Diagrame logice (textual):
 
 ## 2. Tehnologii și Principii
 - Frontend: React 18, React Router 6, Vite 5, Leaflet (react‑leaflet).
-- Backend: Node.js 18+, Express 4, CORS, JSON REST.
+- Backend: Node.js 18+, Express 4, CORS, JSON REST, Prometheus metrics.
 - Principii:
   - Separation of concerns (UI, state, API).
   - Defensive programming pe clienții HTTP; fallback în demo.
-  - Securitate JWT pentru rutele protejate.
+  - Securitate JWT pentru rutele protejate; Bearer în OpenAPI.
   - Configurabilitate prin variabile de mediu.
   - Testare e2e cu Playwright pentru scenarii cheie.
 
@@ -64,6 +64,10 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
 - Clienți HTTP: [auth.js](file:///d:/SafeKidAPP/frontend/src/api/auth.js), [client.js](file:///d:/SafeKidAPP/frontend/src/api/client.js)
 - Bază URL: `import.meta.env.VITE_API_URL` sau proxy Vite pentru `/api` (vezi [vite.config.js](file:///d:/SafeKidAPP/frontend/vite.config.js)).
 - Fallback demo: dacă demo ON, metode precum `getDeviceLocation`, `getDeviceLocationHistory` returnează date sintetice (inclusiv rute și puncte).
+
+Notă validare număr telefon membru:
+- Formularul “Adaugă membru” validează pattern 07[0-9]{8} și normalizează inputul la cifre; serverul curăță non‑numerice și validează tolerant E.164.
+- Fișier: [AddMember.jsx](file:///d:/SafeKidAPP/frontend/src/pages/member/AddMember.jsx).
 
 ### 3.5. Funcționalități majore UI
 
@@ -111,10 +115,22 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
 
 ### 4.1. Organizare
 - Entry: [src/index.js](file:///d:/SafeKidAPP/backend/src/index.js)
+- Layere:
+  - Routes → Controllers → Services → Repositories → DB
+  - Controllers:
+    - Devices: [controllers/devicesController.js](file:///d:/SafeKidAPP/backend/src/controllers/devicesController.js)
+    - Users: [controllers/usersController.js](file:///d:/SafeKidAPP/backend/src/controllers/usersController.js)
+  - Services:
+    - Orange Location: [services/orangeLocationService.js](file:///d:/SafeKidAPP/backend/src/services/orangeLocationService.js)
+    - Orange Reachability: [services/orangeReachabilityService.js](file:///d:/SafeKidAPP/backend/src/services/orangeReachabilityService.js)
+  - Repositories:
+    - Users/Devices: [repositories](file:///d:/SafeKidAPP/backend/src/repositories)
+    - OTP Audit: [repositories/auditRepo.js](file:///d:/SafeKidAPP/backend/src/repositories/auditRepo.js)
+  - DB & Migrații: [db/index.js](file:///d:/SafeKidAPP/backend/src/db/index.js)
 - Rute:
   - `/api/auth` — register/login.
   - `/api/users` — profil (me) GET/PATCH.
-  - `/api/devices` — listare, detalii, validare OTP (viitor), location, reachability, location‑history, live‑tracking.
+  - `/api/devices` — listare (cu X‑Total‑Count), detalii, onboarding + validare OTP, location, reachability, location‑history, live‑tracking.
 - Dev helpers:
   - `/api/dev/start-vite` — pornește Vite dev server pe 3006.
   - `/api/dev/build-frontend` — build Vite programatic.
@@ -127,7 +143,8 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
   - Integrare cu Orange CAMARA:
     - Device Location Retrieval (v0.3)
     - Device Reachability Status (v0.6)
-  - Persistență: PostgreSQL + PostGIS (vezi [backend/README.md](file:///d:/SafeKidAPP/backend/README.md) și `schema/`).
+  - Persistență: PostgreSQL; fallback la in‑memory dacă lipsește `DATABASE_URL`.
+  - OTP Audit: persistat în tabel dedicat `otp_audit` (vezi §4.6).
 
 ### 4.3. Endpoints relevante (rezumat)
 - Auth:
@@ -135,8 +152,10 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
 - Users:
   - `GET /api/users/me`, `PATCH /api/users/me`.
 - Devices:
-  - `GET /api/devices` — listare.
+  - `GET /api/devices` — listare (X‑Total‑Count, sortare stabilă).
   - `GET /api/devices/:id` — detalii.
+  - `POST /api/devices` — onboarding (msisdn, label) + trimitere OTP.
+  - `POST /api/devices/:id/validate-otp` — validează codul.
   - `GET /api/devices/:id/location` — locație curentă.
   - `GET /api/devices/:id/reachability` — reachability.
   - `GET /api/devices/:id/location-history` — istoric.
@@ -148,8 +167,62 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
   - Location Retrieval v0.3
   - Reachability Status v0.6
 
+Timeout & corelare:
+- Timeout cu `AbortController` (implicit 10s, `ORANGE_TIMEOUT_MS`).
+- Corelare cu `x-correlator` și log JSON la request/ok/eroare.
+
+Metrici Orange:
+- `echosafe_orange_errors_total{api,code}`
+- `echosafe_orange_request_duration_seconds{api,status}`
+
 ### 4.5. Servire Frontend Build
 - Dacă există `frontend/dist/index.html`, backend servește static UI pe orice rută non‑/api.
+
+### 4.6. Persistență și Migrații
+- `runMigrations()` creează tabelele de bază (users, devices) și `otp_audit`.
+- Opțional, rulează toate fișierele `.sql` din `backend/schema` dacă `RUN_SCHEMA_SQL=1`.
+- OTP audit:
+  - Repo: [repositories/auditRepo.js](file:///d:/SafeKidAPP/backend/src/repositories/auditRepo.js)
+  - Înregistrări la `otp/request`, `otp/resend`, `otp/verify` (ok/fail), cu fallback in‑memory fără DB.
+
+### 4.7. Validări & Paginare
+- Query params:
+  - `maxAge` (location) — întreg 0..86400, 400 pe invalid.
+  - `from`/`to` (location‑history) — ISO 8601, 400 pe invalid.
+- Paginare devices: `limit`, `offset` și header `X‑Total‑Count`; sortare stabilă după `created_at desc`.
+
+### 4.8. Rate Limiting
+- Global: limiter IP pe prefix `/api` cu metrica `echosafe_rate_limit_hits_total{scope}`.
+- Dedicat Orange: middleware `rateLimit(windowMs, max, scope)` pe rutele:
+  - `GET /api/devices/:id/location` (scope: `orange_location`)
+  - `GET /api/devices/:id/location-history` (scope: `orange_location_history`)
+- Include header `Retry‑After` la 429.
+
+### 4.9. Observabilitate (server)
+- Endpoint Prometheus: `/metrics`.
+- Metrici:
+  - `echosafe_http_requests_total{method,route,code}`
+  - `echosafe_http_request_duration_seconds{method,route,code}`
+  - `echosafe_rate_limit_hits_total{scope}`
+  - Metricile Orange (§4.4).
+- Health: `/api/health` (include mod `db`/`memory` și build info), `/api/ready`.
+
+### 4.10. Logging structurat
+- Logger JSON simplu: [utils/logger.js](file:///d:/SafeKidAPP/backend/src/utils/logger.js)
+- Corelare request:
+  - Middleware setează `X‑Request‑Id` pentru fiecare cerere.
+  - Handler erori: log JSON cu `req_id`, `route`, `code`.
+  - Servicii Orange: log la request/ok/eroare cu `correlator`.
+
+### 4.11. Securitate API & OpenAPI
+- OpenAPI:
+  - `components.securitySchemes.BearerAuth` (JWT).
+  - `security` aplicat pe `/api/users` și `/api/devices`.
+  - `components.schemas.Error` standard pentru răspunsuri de eroare.
+- Fail‑fast în producție:
+  - Lipsă `DATABASE_URL` → procesul iese.
+  - `AUTH_SECRET` lipsă sau default → procesul iese.
+- CORS: allow‑list de origini configurabil; antete de securitate setate default.
 
 ## 5. Modele de Date (plan pentru producție)
 - Users (admin), Monitored_Devices, Geofences (No‑Go/Safe Zones), Routes (smart/free‑hand), Location_History.
@@ -162,17 +235,19 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
 - Validări ownership la resursele device‑urilor.
 - Protecție XSS: randare controlată a textului în alerte; linkurile folosesc `rel="noopener"`.
 - Fără logare de secrete; variabile sensibile în `.env` (nepăstrate în repo).
+ - Fail‑fast: verificări stricte la start pentru `AUTH_SECRET`/`DATABASE_URL`.
 
 ## 7. Observabilitate
-- Logging simplu pentru fluxurile critice (register/login, health).
-- Extensii recomandate: Winston + corelare request‑id, APM (Elastic/OpenTelemetry), dashboard pentru rate de eroare, latențe și trafic.
+- Prometheus `/metrics` cu metricle enumerate în §4.9.
+- Logging JSON cu `req.id` și corelare Orange.
+- Extensii recomandate: OpenTelemetry, dashboard pentru rate de eroare, latențe și trafic.
 
 ## 8. Performanță
 - Frontend:
   - Hărți Leaflet optimizate (polilinii eficiente; renunțare la slider heatmap; rază fixă 40m).
   - UI reactiv cu React hooks și CSS modules (z‑index fix pentru header).
   - Export CSV generat client‑side fără roundtrip suplimentar.
-- Backend (demo): răspunsuri rapide, fără I/O de DB.
+- Backend: timeouts pentru apeluri externe; paginare, rate‑limiting dedicat, sortare stabilă.
 - Viitor: caching la layerul de istoric/heatmap; streaming WebSocket pentru live; offload calcule trasee.
 
 ## 9. Build & Deploy
@@ -182,7 +257,7 @@ Chei de stat exemplu (extrase din [AppContext.jsx](file:///d:/SafeKidAPP/fronten
 - Backend:
   - Dev: `npm run dev` (watch), port 4000, health: `/api/health`.
   - Prod: `npm start`.
-- Config: `VITE_API_URL` (frontend), chei Orange & `ORANGE_DEMO` (backend).
+- Config: `VITE_API_URL` (frontend), chei Orange, `ORANGE_TIMEOUT_MS`, `ORANGE_DEMO`, `AUTH_SECRET`, `RUN_SCHEMA_SQL` (backend).
 
 ## 10. Testare
 - Teste e2e Playwright (Chromium headless), configurate în [playwright.config.js](file:///d:/SafeKidAPP/frontend/playwright.config.js).

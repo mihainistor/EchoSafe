@@ -7,6 +7,9 @@ const LIVE_TRACKING_DURATION_MS = 10 * 60 * 1000 // 10 minute
 
 export const users = new Map()
 export const monitoredDevices = new Map()
+export const otpEmailStore = new Map()
+export const otpRateLimit = new Map()
+export const otpAudit = []
 
 // Seed minimal pentru demo
 const seedAdminId = 'a1b2c3d4-0000-4000-8000-000000000001'
@@ -148,4 +151,36 @@ export function revokeDevice(device_id) {
   if (!dev) return false
   monitoredDevices.delete(device_id)
   return true
+}
+
+export function trackOtpRequest(email, ip) {
+  const now = Date.now()
+  const key = String(email).toLowerCase()
+  const arr = otpRateLimit.get(key) || []
+  const recent = arr.filter((t) => now - t < 60 * 1000)
+  recent.push(now)
+  otpRateLimit.set(key, recent)
+  otpAudit.push({ type: 'request', email: key, ip: String(ip || ''), at: new Date(now).toISOString() })
+  return recent.length
+}
+
+export function getOtpEntry(email) {
+  const key = String(email).toLowerCase()
+  const v = otpEmailStore.get(key)
+  if (!v) return null
+  if (v.expiresAt && Date.now() > v.expiresAt) {
+    otpEmailStore.delete(key)
+    return null
+  }
+  return v
+}
+
+export function setOtpEntry(email, entry) {
+  const key = String(email).toLowerCase()
+  otpEmailStore.set(key, entry)
+}
+
+export function deleteOtpEntry(email) {
+  const key = String(email).toLowerCase()
+  otpEmailStore.delete(key)
 }

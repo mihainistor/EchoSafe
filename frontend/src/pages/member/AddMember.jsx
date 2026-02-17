@@ -136,7 +136,7 @@ export function AddMember() {
                 value={msisdn}
                 onChange={(e) => setMsisdn(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 inputMode="numeric"
-                pattern="07\\d{8}"
+                pattern="07[0-9]{8}"
                 maxLength={10}
                 title="10 cifre, trebuie să înceapă cu 07"
                 required
